@@ -7,9 +7,9 @@ public enum AsnTag
     OBJECT_IDENTIFIER (0x06),
     SEQUENCE (0x30);
 
-    private byte tag;
+    private final byte tag;
 
-    private AsnTag(int a)
+    AsnTag(int a)
     {
         tag = (byte)a;
     }
