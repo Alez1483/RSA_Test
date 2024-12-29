@@ -6,12 +6,13 @@ public class AsnSequence extends AsnElement
     {
         super(AsnTag.SEQUENCE, null);
 
-        byte[] data = new byte[0];
+        byte[][] allBytes = new byte[elements.length][];
 
-        for (AsnElement element : elements)
+        for (int index = 0; index < elements.length; index++)
         {
-            data = ByteArrayUtil.ConcatenateArrays(data, element.getBytes());
+            allBytes[index] = elements[index].getBytes();
         }
-        this.data = data;
+        
+        this.data = ByteArrayUtil.ConcatenateArrays(allBytes);
     }
 }

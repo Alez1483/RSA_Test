@@ -22,7 +22,7 @@ public class AsnElement
     {
         byte[] lengthBytes;
 
-        if (length <= 0b0111_1111)
+        if (length < 0b1000_0000)
         {
             lengthBytes = new byte[]{ (byte)length };
         }

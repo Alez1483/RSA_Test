@@ -1,9 +1,6 @@
-import AsnEncoding.AsnElement;
-import AsnEncoding.AsnSequence;
-import AsnEncoding.AsnTag;
+import AsnEncoding.*;
 
 import java.math.BigInteger;
-import java.util.Base64;
 
 public class PublicKey extends Key
 {
@@ -15,21 +12,20 @@ public class PublicKey extends Key
     @Override
     public String toString()
     {
-        AsnElement modulusElement = new AsnElement(AsnTag.INTEGER, getModulus().toByteArray());
-        AsnElement exponentElement = new AsnElement(AsnTag.INTEGER, getExponent().toByteArray());
-        AsnSequence mainSequence = new AsnSequence(modulusElement, exponentElement);
+        AsnInteger modulusElement = new AsnInteger(getModulus());
+        AsnInteger exponentElement = new AsnInteger(getExponent());
+        AsnSequence keySequence = new AsnSequence(modulusElement, exponentElement);
+        AsnBitString keySequenceBitStr = new AsnBitString(keySequence.getBytes());
 
-        String lineSeparator = System.lineSeparator();
-        byte[] lineSeparatorBytes = new byte[lineSeparator.length()];
+        AsnObjectIdentifier rsaIdentifier = new AsnObjectIdentifier("1.2.840.113549.1.1.1");
+        AsnElement parameters = AsnNull.getInstance();
+        AsnSequence rsaAlgorithmIdentifier = new AsnSequence(rsaIdentifier, parameters);
 
-        for (int i = 0; i < lineSeparator.length(); i++)
-        {
-            lineSeparatorBytes[i] = (byte)lineSeparator.charAt(i);
-        }
+        AsnSequence mainSequence = new AsnSequence(rsaAlgorithmIdentifier, keySequenceBitStr);
 
-        Base64.Encoder encoder = Base64.getMimeEncoder(64, lineSeparatorBytes);
-        String keyStr = encoder.encodeToString(mainSequence.getBytes());
-
-        return "-----BEGIN RSA PUBLIC KEY-----" + lineSeparator + keyStr + lineSeparator + "-----END RSA PUBLIC KEY-----";
+        String base64Str = MimeEncoder.bytesToString(mainSequence.getBytes());
+        return "-----BEGIN RSA PUBLIC KEY-----\n" +
+                base64Str +
+                "\n-----END RSA PUBLIC KEY-----";
     }
 }
